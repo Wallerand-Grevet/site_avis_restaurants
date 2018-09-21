@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Site avis restaurant</title>
+  <meta name="viewport" content="initial-scale=1.0">
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"
+    crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU"
+    crossorigin="anonymous">
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <h1> site avis restaurant</h1>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-8">
+        <div id="map"></div>
+      </div>
+      <div class="col-md-4" id="ensembleAvis">
+        <div id="filtre">
+          <p> Entre
+            <select id="etoilemin">
+              <option selected>1 étoile </option>
+              <option>2 étoiles</option>
+              <option>3 étoiles</option>
+              <option>4 étoiles</option>
+              <option>5 étoiles</option>
+            </select>
+            et
+            <select id="etoilemax">
+              <option>1 étoile </option>
+              <option>2 étoiles</option>
+              <option>3 étoiles</option>
+              <option>4 étoiles</option>
+              <option selected>5 étoiles</option>
+            </select>
+          </p>
+
+        </div>
+        <div id="addRestaurants"></div>
+        <div id="restaurants"></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-8">
+        <div id="ajoutCommentaire"></div>
+      </div>
+      <div class="col-md-4">
+        <div id="streetView"></div>
+      </div>
+    </div>
+  </div>
+  
+
+
+
+
+
+
+  <script src="config.js"></script>
+
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCNd35nwOHwihsaBPyuffJGLWgixK3JKy8&callback=initMap"></script>
+  <script type="text/javascript" src="map.js"></script>
+
+
+</body>
+
+</html>

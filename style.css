@@ -1,0 +1,36 @@
+h1
+{
+    background-color:#E3E7E7;
+    text-align: center;
+}
+#restaurants,#filtre, #addRestaurants, #streetView, #ajoutCommentaire
+{
+    text-align: center;
+}
+#map, #avis
+{
+    height: 600px;
+}
+#ensembleAvis
+{
+    height: 600px;
+    overflow: scroll;
+    
+}
+#ajoutCommentaire
+{
+    
+    background-color: aqua;
+    height: 100%
+}
+
+img
+{
+    width: 100%;
+    height: 100%
+}
+#streetView, #restaurants
+{
+    background-color: blueviolet
+}
+

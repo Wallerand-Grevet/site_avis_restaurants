@@ -1,0 +1,122 @@
+[
+   {
+      "restaurantName":"Bronco",
+      "address":"39 Rue des Petites Écuries, 75010 Paris",
+      "lat":48.8738211,
+      "long":2.35000279999997,
+      "ratings":[
+         {
+            "stars":4,
+            "comment":"Un excellent restaurant, j'y reviendrai ! Par contre il vaut mieux aimer la viande."
+         },
+         {
+            "stars":5,
+            "comment":"Tout simplement mon restaurant préféré !"
+         }
+      ]
+   },
+   {
+    "restaurantName":"Le Diamant de Paris",
+    "address":"59 Rue Servan, 75011 Paris",
+    "lat":48.8629841,
+    "long":2.381490500000041,
+    "ratings":[
+       {
+          "stars":1,
+          "comment":"Quand on a la prétention d'appeler son restaurant Le Diamant de Paris il faut drôlement être à la hauteur"
+       },
+       {
+          "stars":4,
+          "comment":"Un tout petit restaurant de par sa capacité d'accueil, mais grand dans sa cuisine."
+       }
+    ]
+    },
+    {
+      "restaurantName":"Chez papa",
+      "address":"6 Rue Gassendi, 75014 Paris",
+      "lat":48.8359448,
+      "long":2.327406999999994,
+      "ratings":[
+         {
+            "stars":5,
+            "comment":"Très bon accueil, nourriture au top. Chez papa c’est toujours un plaisir d’aller manger. Essayez les salades, vous ne serez pas déçu !"
+         },
+         {
+          "stars":5,
+          "comment":"Cuisine du sud-ouest... Canard et produits régionaux. Ambiance et service sympa...Le cassoulet de canard était vraiment bon... Accompagné d'un petit Gaillac..."
+          },
+         {
+            "stars":4,
+            "comment":"La nourriture est bonne et servi en bonne quantité."
+         }
+      ]
+      },
+   {
+      "restaurantName":"Babalou",
+      "address":"4 Rue Lamarck, 75018 Paris",
+      "lat":48.88652829999999,
+      "long":2.3442967999999382,
+      "ratings":[
+         {
+            "stars":5,
+            "comment":"Une minuscule pizzeria délicieuse cachée juste à côté du Sacré choeur !"
+         },
+         {
+            "stars":3,
+            "comment":"J'ai trouvé ça correct, sans plus"
+         }
+      ]
+   },
+   {
+        "restaurantName":"Le Goujon",
+        "address":"35 Rue de la République, 60410 Verberie",
+        "lat":49.3081617,
+        "long":2.729137499999979,
+        "ratings":[
+        {
+          "stars":1,
+          "comment":"Service execrable !!!!!"
+        },
+        {
+          "stars":3,
+          "comment":"Simple mais peu mmieux faire !"
+        },
+        {
+          "stars":5,
+          "comment":"Service nikel !!!!!"
+        }
+        ]
+    },
+    {
+      "restaurantName":"Coinoptable",
+      "address":"17 Rue de Maubeuge 75009 Paris France",
+      "lat":48.87772990000001,
+      "long":2.343516099999988,
+      "ratings":[
+      {
+        "stars":4,
+        "comment":"Presque parfait !!!!!"
+      },
+      {
+        "stars":5,
+        "comment":"Agréable et prix abordable."
+      }
+      ]
+  },
+  {
+    "restaurantName":"Copenhague",
+    "address":"142, Avenue des Champs ELysées 75008 Paris France",
+    "lat":48.8729957,
+    "long":2.2987620999999763,
+    "ratings":[
+    {
+      "stars":3,
+      "comment":"Passable"
+    },
+    {
+      "stars":3,
+      "comment":"Simple mais peu mmieux faire !"
+    }
+    ]
+}
+]
