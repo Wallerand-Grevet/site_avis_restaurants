@@ -169,7 +169,58 @@ function initMap() {
     restaurantsJson(objetJSON);
 
     
-    
+    // Ajout des marqueurs lors du clic sur la map
+    map.addListener('click',function (e) {
+        iconeRestoAdd = 'img/icone-resto-add.png'
+        var commentaireTab = [];
+        filtreEtoile[0].selectedIndex=0;
+        filtreEtoile[1].selectedIndex=4;
+        var nomNewResto = prompt("quel est le nom de votre restaurant?");
+        var note = 0 
+        while ((note <=0) || (note>5) || (isNaN(note)=== true)) {
+            note = prompt("quel est votre note entre 1 et 5?");
+        }
+        var commentaire = prompt("laissez un avis :")
+        commentaireTab.push(commentaire)
+        var moyenne = note
+        affichageAvis(moyenne,nomNewResto,addRestaurants);
+        var marker = new google.maps.Marker({
+            position: e.latLng,
+            map: map,
+            title : nomNewResto,
+            icon: iconeRestoAdd
+        })
+       
+        marker.addListener('click', function () {
+            
+            // Creation div commentaire avec titre h3
+            streetView.innerHTML = "";
+            ajoutCommentaire.innerHTML = ""
+            affichageAvis(moyenne,nomNewResto,ajoutCommentaire)
+            var divCommentaire = document.createElement("div");
+            var commentaire = document.createTextNode("commentaire : ")
+            var h3Commentaire = document.createElement("h3");
+            divCommentaire.appendChild(h3Commentaire);
+            h3Commentaire.appendChild(commentaire);
+            ajoutCommentaire.appendChild(divCommentaire);
+            for (let i = 0; i < commentaireTab.length; i++) {
+                var avisRestoClic = document.createTextNode(commentaireTab[i])
+                var pCommentaire = document.createElement("p");
+                divCommentaire.appendChild(pCommentaire);
+                pCommentaire.appendChild(avisRestoClic);
+                
+            }
+            // insertion image google street 
+            imgStreet = document.createElement("img")
+            latitude = this.getPosition().lat();
+            longitude = this.getPosition().lng();
+            var street = "https://maps.googleapis.com/maps/api/streetview?size=200x200&location=" + latitude + "," + longitude + "&fov=90&pitch=10&key=AIzaSyCNd35nwOHwihsaBPyuffJGLWgixK3JKy8";
+            imgStreet.src= street;
+            streetView.appendChild(imgStreet);
+        })
+        
+        
+    })
 
     
     
