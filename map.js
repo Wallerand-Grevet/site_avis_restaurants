@@ -1,157 +1,3 @@
-// importation du json en Objet JS
-var request = new XMLHttpRequest();
-request.open("GET", "restaurants.json", false);
-request.send(null)
-var objetJSON = JSON.parse(request.responseText); 
-
-var addRestaurants = document.getElementById("addRestaurants");
-var restaurants = document.getElementById("restaurants");
-var filtre = document.getElementById("filtre");
-var ajoutCommentaire = document.getElementById("ajoutCommentaire");
-var streetView = document.getElementById("streetView");
-
-
-/**
- * fonction servant a calculer la moyenne des avis 
- * @param noteTab Tableau contennant les notes des avis
- */
-function calculMoyenne(tableauNote){
-    var additionNote = 0
-    for (let i = 0; i < tableauNote.length; i++) {
-        additionNote = additionNote + tableauNote[i]
-        var moyenne = additionNote / tableauNote.length;
-    };
-    return moyenne
-}
-
-
-/**
- * Affiche le nombre d'etoile selon la moyenne
- *@param moyenne moyenne des avis du restaurant
- *@param pElt paragraphe ou l'on ajoute les étoiles
- */
-function affichageEtoile (moyenne, pElt){
-    var apresVirgule = moyenne - (Math.floor(moyenne))
-    var resteMoyenne = 5 - (Math.floor(moyenne))
-    for (let i = 1; i <= moyenne; i++) {
-        var etoilePleine = document.createElement("i");
-        etoilePleine.classList = "fas fa-star"
-        pElt.appendChild(etoilePleine)
-    }
-    if (apresVirgule !== 0 ) {
-        var etoileDemi = document.createElement("i");
-        etoileDemi.classList = "fas fa-star-half-alt";
-        pElt.appendChild(etoileDemi);
-        resteMoyenne = resteMoyenne - 1
-    }
-    for (let j = 1; j <= resteMoyenne; j++) {
-        var etoileVide = document.createElement("i");
-        etoileVide.classList = "far fa-star"
-        pElt.appendChild(etoileVide)
-    }
-}
-
-/**
- * @param moyenne moyenne des notes
- * @param nomDuResto nom du resrestaurant
- * @param id id HTML pour spécifier l'endroit ou aafficher les avis
- */
-function affichageAvis(moyenne,nomDuResto,id) {
-    
-    var divElt = document.createElement("div");
-    var h2Elt = document.createElement("h2");
-    var pElt = document.createElement("p");
-    var nomResto = document.createTextNode(nomDuResto);
-    var moyenneResto = document.createTextNode("note : ");
-    id.appendChild(divElt);
-    divElt.appendChild(h2Elt);
-    h2Elt.appendChild(nomResto);
-    divElt.appendChild(pElt);
-    pElt.appendChild(moyenneResto);
-    affichageEtoile(moyenne, pElt)
-}
-
-
-
-var markerTab = []
-
-
-/**
- * Creation fonction qui genère les restaurants du JSOn
- * @param  json tableau representant le fichier json (objetJSON)
- */
-function restaurantsJson(json) {
-    iconeResto = 'img/icone-resto-json.png'
-    
-
-    for (var i = 0; i < json.length; i++) {
-        var latitudeResto = json[i].lat;
-        var longitudeResto = json[i].long;
-        
-        positionRestaurant = {lat : latitudeResto, lng: longitudeResto}
-        // creation des marqueurs de la position des restaurants.
-        marker = new google.maps.Marker({
-            position: positionRestaurant,
-            map: map,
-            icon:iconeResto,
-            title: json[i].restaurantName
-        });
-        
-        //  ajout du marker dans le tableau markerTab
-        markerTab.push(marker)
-
-        //Ajout d'un evenement lors du click sur les markers 
-        marker.addListener('click',function () {
-            streetView.innerHTML = "";
-            ajoutCommentaire.innerHTML = ""
-            var noteTab = []
-            for (let i = 0; i < objetJSON.length; i++) {
-                if ((this.getPosition().lat() === objetJSON[i].lat) && (this.getPosition().lng() === objetJSON[i].long)) {
-                    for (var j = 0; j < objetJSON[i].ratings.length; j++){
-                        var note = objetJSON[i].ratings[j].stars;
-                        noteTab.push(note)
-                    };
-                    moyenne = calculMoyenne(noteTab)
-                    nomResto = objetJSON[i].restaurantName
-                    affichageAvis(moyenne,nomResto,ajoutCommentaire)
-                    
-
-                    // Creation div commentaire avec titre h3
-                    var divCommentaire = document.createElement("div");
-                    var commentaire = document.createTextNode("commentaire : ")
-                    var h3Commentaire = document.createElement("h3");
-                    divCommentaire.appendChild(h3Commentaire);
-                    h3Commentaire.appendChild(commentaire);
-                    ajoutCommentaire.appendChild(divCommentaire);
-                    
-                    // Insertion de tous les commentaires du json dans la div commentaire 
-                    for (let index = 0; index < objetJSON[i].ratings.length; index++) {
-                        var avisRestoClic = document.createTextNode(objetJSON[i].ratings[index].comment)
-                        var pCommentaire = document.createElement("p");
-                        divCommentaire.appendChild(pCommentaire);
-                        pCommentaire.appendChild(avisRestoClic);
-
-                    
-                    }
-                    // insertion image google street 
-                    imgStreet = document.createElement("img")
-                    latitude = this.getPosition().lat();
-                    longitude = this.getPosition().lng();
-                    var street = "https://maps.googleapis.com/maps/api/streetview?size=1600x500&location=" + latitude + "," + longitude + "&fov=90&pitch=10&key=AIzaSyCNd35nwOHwihsaBPyuffJGLWgixK3JKy8";
-
-                    imgStreet.src= street;
-                    streetView.appendChild(imgStreet);
-                }
-                
-            }
-           
-        })
-        
-        
-    }
-}
-
-
 var map;
 
 /**
@@ -166,31 +12,41 @@ function initMap() {
         zoom: 9
     });
     // importation restaurant du fichier JSON
-    restaurantsJson(objetJSON);
+    ajoutRestaurantMap()
 
     
     // Ajout des marqueurs lors du clic sur la map
     map.addListener('click',function (e) {
         iconeRestoAdd = 'img/icone-resto-add.png'
-        var commentaireTab = [];
+        
         filtreEtoile[0].selectedIndex=0;
         filtreEtoile[1].selectedIndex=4;
         var nomNewResto = prompt("quel est le nom de votre restaurant?");
+        var adresse  = prompt("quel est l'adresse du restaurant?")
         var note = 0 
         while ((note <=0) || (note>5) || (isNaN(note)=== true)) {
             note = prompt("quel est votre note entre 1 et 5?");
         }
+        
         var commentaire = prompt("laissez un avis :")
-        commentaireTab.push(commentaire)
         var moyenne = note
-        affichageAvis(moyenne,nomNewResto,addRestaurants);
+        affichageAvis(moyenne,nomNewResto,restaurants);
         var marker = new google.maps.Marker({
             position: e.latLng,
             map: map,
             title : nomNewResto,
             icon: iconeRestoAdd
-        })
-       
+        });
+        
+        markerTab.push(marker)
+        restaurant = new Restaurant (nomNewResto,adresse, marker.position.lat(), marker.position.lng())
+        restaurant.avis.push(commentaire);
+        restaurant.note.push(note);
+        tabRestaurants.push(restaurant);
+
+        
+
+
         marker.addListener('click', function () {
             
             // Creation div commentaire avec titre h3
@@ -235,10 +91,6 @@ function initMap() {
         filtreEtoile[1].selectedIndex=4;
         //a chaque mvt de la map on vide la parti droite du site pour mise a jour en temps reel
         restaurants.innerHTML = '';
-        // creation tableau recupérant les moyenne des notes des restos
-        var moyenneNoteResto = []
-        // creation tableau recupérant les noms des restos
-        var nomRestoTab = []
         // creation tableau recupérant les markers des restos visible sur la map
         var markerVisible = []
         // creation des bornes de la map
@@ -247,35 +99,21 @@ function initMap() {
         var sudLng = bornes.getSouthWest().lng();
         var nordLat = bornes.getNorthEast().lat();
         var nordLng = bornes.getNorthEast().lng();
-        // On parcours le tableau des markers pour parcourir les restaurants du json
-        for (var i = 0; i < markerTab.length; i++) {
-            
-        
+        // On parcours le tableau des markers pour parcourir les restaurants 
+        for (var i = 0; i < tabRestaurants.length; i++) {
             //on delimite la carte visible grace aux bornes de la map
-            if (sudLat < markerTab[i].position.lat() && nordLat > markerTab[i].position.lat() && sudLng < markerTab[i].position.lng() && nordLng > markerTab[i].position.lng() ) {
+            if (sudLat < tabRestaurants[i].lat && nordLat > tabRestaurants[i].lat && sudLng <tabRestaurants[i].long && nordLng > tabRestaurants[i].long) {
                 // Ajout des marker visible sur la carte dans le tableau markerVisible.
                 markerVisible.push(markerTab[i]);
                 //On rend visible tous les marqueurs sur la maps lors d'un mouvement effectuer sur cette map
                 for (let j = 0; j < markerVisible.length; j++) {
                     markerVisible[j].setVisible(true)
                 }
-                //creation tableau de note
-                var noteTab = []
-                
-                var nomResto = objetJSON[i].restaurantName
-                //ajout des noms des restaurants dans le tableau
-                nomRestoTab.push(nomResto)
-                // on recupere les notes du restaurant.
-                for (var j = 0; j < objetJSON[i].ratings.length; j++){
-                    var note = objetJSON[i].ratings[j].stars;
-                    noteTab.push(note)
-                };
-                // calcul de la moyenne du restaurant
-                var moyenne = calculMoyenne(noteTab)
+                var nomResto = tabRestaurants[i].nom;
+                var moyenne = tabRestaurants[i].moyenne();
                 // affichage des avis et nom resto sur la partie droite
                 affichageAvis(moyenne, nomResto,restaurants)
-                //ajout de la moyenne dans le tableau moyenne
-                moyenneNoteResto.push(moyenne)
+    
                 
                 // gestion du filtre min grace a la liste déroulante.
                 filtreEtoile[0].onchange= function(){
@@ -288,15 +126,17 @@ function initMap() {
                     //a chaque chgt du filtre min on vide la parti droite du site pour mise a jour en temps reel
                     restaurants.innerHTML='';
                     // parcours le tableau des moyennes des notes des restos
-                    for(i = 0; i < moyenneNoteResto.length; i++){
+                    for(i = 0; i < tabRestaurants.length; i++){
                         //creation des conditions d'affichage des avis selon le filtre
-                        if ((moyenneNoteResto[i] >= parseInt(this.value)) && (moyenneNoteResto[i] <= valeurEtoileMax) ) {
-                            affichageAvis(moyenneNoteResto[i],nomRestoTab[i],restaurants);
-                            var nomRestaurant = nomRestoTab[i];
+                        if ((tabRestaurants[i].moyenne() >= parseInt(this.value)) && (tabRestaurants[i].moyenne() <= valeurEtoileMax) ) {
+                            var nomResto = tabRestaurants[i].nom;
+                            var moyenne = tabRestaurants[i].moyenne();
+                            affichageAvis(moyenne,nomResto,restaurants);
+            
                             // parcours du tableau des markers visibles
                             for (let index = 0; index < markerVisible.length; index++) {
                                 // on rend visible les marqueurs en comparant le titre du marqueur present dans le tableau au nom des restaurants
-                                if (markerVisible[index].title === nomRestaurant) {
+                                if (markerVisible[index].title === nomResto) {
                                     markerVisible[index].setVisible(true);
                                 }
                                 
@@ -315,15 +155,17 @@ function initMap() {
                     //a chaque chgt du filtre max on vide la parti droite du site pour mise a jour en temps reel
                     restaurants.innerHTML='';
                     // parcours le tableau des moyennes des notes des restos
-                    for(i = 0; i < moyenneNoteResto.length; i++){
+                    for(i = 0; i < tabRestaurants.length; i++){
                         //creation des conditions d'affichage des avis selon le filtre
-                        if ((moyenneNoteResto[i] <= parseInt(this.value)) && (moyenneNoteResto[i] >= valeurEtoileMin) ) {
-                            affichageAvis(moyenneNoteResto[i],nomRestoTab[i],restaurants);
-                            var nomRestaurant = nomRestoTab[i];
+                        if ((tabRestaurants[i].moyenne() <= parseInt(this.value)) && (tabRestaurants[i].moyenne() >= valeurEtoileMin) ) {
+                            var nomResto = tabRestaurants[i].nom;
+                            var moyenne = tabRestaurants[i].moyenne();
+                            affichageAvis(moyenne,nomResto,restaurants);
+                
                            // parcours du tableau des markers visibles
                             for (let index = 0; index < markerVisible.length; index++) {
                                 // on rend visible les marqueurs en comparant le titre du marqueur present dans le tableau au nom des restaurants
-                                if (markerVisible[index].title === nomRestaurant) {
+                                if (markerVisible[index].title === nomResto) {
                                     markerVisible[index].setVisible(true);
                                 }
                             }
