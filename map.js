@@ -14,11 +14,10 @@ function initMap() {
     // importation restaurant du fichier JSON
     ajoutRestaurantMap()
 
-    
     // Ajout des marqueurs lors du clic sur la map
     map.addListener('click',function (e) {
         iconeRestoAdd = 'img/icone-resto-add.png'
-        
+        filtre.style.visibility = 'hidden';
         filtreEtoile[0].selectedIndex=0;
         filtreEtoile[1].selectedIndex=4;
         var nomNewResto = prompt("quel est le nom de votre restaurant?");
@@ -44,35 +43,46 @@ function initMap() {
         restaurant.note.push(note);
         tabRestaurants.push(restaurant);
 
-        
-
-
-        marker.addListener('click', function () {
-            
-            // Creation div commentaire avec titre h3
+        //Ajout d'un evenement lors du click sur les markers 
+        marker.addListener('click',function () {
             streetView.innerHTML = "";
-            ajoutCommentaire.innerHTML = ""
-            affichageAvis(moyenne,nomNewResto,ajoutCommentaire)
-            var divCommentaire = document.createElement("div");
-            var commentaire = document.createTextNode("commentaire : ")
-            var h3Commentaire = document.createElement("h3");
-            divCommentaire.appendChild(h3Commentaire);
-            h3Commentaire.appendChild(commentaire);
-            ajoutCommentaire.appendChild(divCommentaire);
-            for (let i = 0; i < commentaireTab.length; i++) {
-                var avisRestoClic = document.createTextNode(commentaireTab[i])
-                var pCommentaire = document.createElement("p");
-                divCommentaire.appendChild(pCommentaire);
-                pCommentaire.appendChild(avisRestoClic);
+            ajoutCommentaire.innerHTML = "";
+            for (let i = 0; i < tabRestaurants.length; i++) {
+                if ((this.getPosition().lat() === tabRestaurants[i].lat) && (this.getPosition().lng() === tabRestaurants[i].long)) {
+                    var nomResto = tabRestaurants[i].nom;
+                    var moyenne = tabRestaurants[i].moyenne();
+                    affichageAvis(moyenne,nomResto,ajoutCommentaire);
+                    
+
+                    // Creation div commentaire avec titre h3
+                    var divCommentaire = document.createElement("div");
+                    var commentaire = document.createTextNode("commentaire : ");
+                    var h3Commentaire = document.createElement("h3");
+                    divCommentaire.appendChild(h3Commentaire);
+                    h3Commentaire.appendChild(commentaire);
+                    ajoutCommentaire.appendChild(divCommentaire);
+                    
+                    // Insertion de tous les commentaires du json dans la div commentaire 
+                    for (let j = 0; j < tabRestaurants[i].avis.length; j++) {
+                        var avisRestoClic = document.createTextNode(tabRestaurants[i].avis[j]);
+                        var pCommentaire = document.createElement("p");
+                        divCommentaire.appendChild(pCommentaire);
+                        pCommentaire.appendChild(avisRestoClic);
+
+                    
+                    }
+                    // insertion image google street 
+                    imgStreet = document.createElement("img");
+                    latitude = this.getPosition().lat();
+                    longitude = this.getPosition().lng();
+                    var street = "https://maps.googleapis.com/maps/api/streetview?size=1600x500&location=" + latitude + "," + longitude + "&fov=90&pitch=10&key=AIzaSyCNd35nwOHwihsaBPyuffJGLWgixK3JKy8";
+
+                    imgStreet.src= street;
+                    streetView.appendChild(imgStreet);
+                }
                 
             }
-            // insertion image google street 
-            imgStreet = document.createElement("img")
-            latitude = this.getPosition().lat();
-            longitude = this.getPosition().lng();
-            var street = "https://maps.googleapis.com/maps/api/streetview?size=200x200&location=" + latitude + "," + longitude + "&fov=90&pitch=10&key=AIzaSyCNd35nwOHwihsaBPyuffJGLWgixK3JKy8";
-            imgStreet.src= street;
-            streetView.appendChild(imgStreet);
+           
         })
         
         
@@ -82,17 +92,16 @@ function initMap() {
     
     // Recuperation des bornes de la carte et ajout des restaurant afficher sur la carte dans la partie gauche a chaque action sur la map 
     map.addListener('bounds_changed', function () {
-        // recuperation des listes deroulante pour filtrer les restaurant selon etoile
         
-        addRestaurants.style.display='block';
         filtre.style.visibility= 'visible';
         //a chaque mvt de la map on met le filtre min a 1 etoile et le filtre max a 5 étoiles
         filtreEtoile[0].selectedIndex=0;
         filtreEtoile[1].selectedIndex=4;
         //a chaque mvt de la map on vide la parti droite du site pour mise a jour en temps reel
         restaurants.innerHTML = '';
-        // creation tableau recupérant les markers des restos visible sur la map
-        var markerVisible = []
+        // creation tableaux recupérant les markers et les restos visible sur la map
+        var markerVisible = [];
+        var restoVisible = [];
         // creation des bornes de la map
         var bornes = map.getBounds();
         var sudLat = bornes.getSouthWest().lat();
@@ -102,79 +111,82 @@ function initMap() {
         // On parcours le tableau des markers pour parcourir les restaurants 
         for (var i = 0; i < tabRestaurants.length; i++) {
             //on delimite la carte visible grace aux bornes de la map
-            if (sudLat < tabRestaurants[i].lat && nordLat > tabRestaurants[i].lat && sudLng <tabRestaurants[i].long && nordLng > tabRestaurants[i].long) {
+            if (sudLat < tabRestaurants[i].lat && nordLat > tabRestaurants[i].lat && sudLng < tabRestaurants[i].long && nordLng > tabRestaurants[i].long) {
                 // Ajout des marker visible sur la carte dans le tableau markerVisible.
                 markerVisible.push(markerTab[i]);
+                restoVisible.push(tabRestaurants[i]);
                 //On rend visible tous les marqueurs sur la maps lors d'un mouvement effectuer sur cette map
                 for (let j = 0; j < markerVisible.length; j++) {
                     markerVisible[j].setVisible(true)
                 }
                 var nomResto = tabRestaurants[i].nom;
                 var moyenne = tabRestaurants[i].moyenne();
+            
                 // affichage des avis et nom resto sur la partie droite
                 affichageAvis(moyenne, nomResto,restaurants)
-    
-                
-                // gestion du filtre min grace a la liste déroulante.
-                filtreEtoile[0].onchange= function(){
-                    // On rend invisible tout les markers pour pouvoir mettre a jour en temps réel les marker filtré
-                    for (let j = 0; j < markerVisible.length; j++) {
-                        markerVisible[j].setVisible(false)
-                    }
-                    //on récupere le nombre d'etoile du filtre max 
-                    valeurEtoileMax = parseInt(filtreEtoile[1].options[filtreEtoile[1].selectedIndex].value);
-                    //a chaque chgt du filtre min on vide la parti droite du site pour mise a jour en temps reel
-                    restaurants.innerHTML='';
-                    // parcours le tableau des moyennes des notes des restos
-                    for(i = 0; i < tabRestaurants.length; i++){
-                        //creation des conditions d'affichage des avis selon le filtre
-                        if ((tabRestaurants[i].moyenne() >= parseInt(this.value)) && (tabRestaurants[i].moyenne() <= valeurEtoileMax) ) {
-                            var nomResto = tabRestaurants[i].nom;
-                            var moyenne = tabRestaurants[i].moyenne();
-                            affichageAvis(moyenne,nomResto,restaurants);
+            }
             
-                            // parcours du tableau des markers visibles
-                            for (let index = 0; index < markerVisible.length; index++) {
-                                // on rend visible les marqueurs en comparant le titre du marqueur present dans le tableau au nom des restaurants
-                                if (markerVisible[index].title === nomResto) {
-                                    markerVisible[index].setVisible(true);
-                                }
-                                
-                            }
+        }
+        
+        // gestion du filtre min grace a la liste déroulante.
+        filtreEtoile[0].onchange= function(){
+                    
+            // On rend invisible tout les markers pour pouvoir mettre a jour en temps réel les marker filtré
+            for (let j = 0; j < markerVisible.length; j++) {
+                markerVisible[j].setVisible(false)
+            }
+            //on récupere le nombre d'etoile du filtre max 
+            valeurEtoileMax = parseInt(filtreEtoile[1].options[filtreEtoile[1].selectedIndex].value);
+            //a chaque chgt du filtre min on vide la parti droite du site pour mise a jour en temps reel
+            restaurants.innerHTML='';
+            // parcours le tableau des moyennes des notes des restos
+            for(i = 0; i < restoVisible.length; i++){
+                //creation des conditions d'affichage des avis selon le filtre
+                if ((restoVisible[i].moyenne() >= parseInt(this.value)) && (restoVisible[i].moyenne() <= valeurEtoileMax) ) {
+                    var nomResto = restoVisible[i].nom;
+                    var moyenne = restoVisible[i].moyenne();
+                    affichageAvis(moyenne,nomResto,restaurants);
+    
+                    // parcours du tableau des markers visibles
+                    for (let index = 0; index < markerVisible.length; index++) {
+                        // on rend visible les marqueurs en comparant le titre du marqueur present dans le tableau au nom des restaurants
+                        if (markerVisible[index].title === nomResto) {
+                            markerVisible[index].setVisible(true);
                         }
+                        
                     }
                 }
-                // gestion du filtre max grace a la liste déroulante.
-                filtreEtoile[1].onchange= function(){
-                    // On rend invisible tout les markers pour pouvoir mettre a jour en temps réel les marker filtré
-                    for (let j = 0; j < markerVisible.length; j++) {
-                        markerVisible[j].setVisible(false)
-                    }
-                    //on récupere le nombre d'etoile du filtre min
-                    valeurEtoileMin = parseInt(filtreEtoile[0].options[filtreEtoile[0].selectedIndex].value);
-                    //a chaque chgt du filtre max on vide la parti droite du site pour mise a jour en temps reel
-                    restaurants.innerHTML='';
-                    // parcours le tableau des moyennes des notes des restos
-                    for(i = 0; i < tabRestaurants.length; i++){
-                        //creation des conditions d'affichage des avis selon le filtre
-                        if ((tabRestaurants[i].moyenne() <= parseInt(this.value)) && (tabRestaurants[i].moyenne() >= valeurEtoileMin) ) {
-                            var nomResto = tabRestaurants[i].nom;
-                            var moyenne = tabRestaurants[i].moyenne();
-                            affichageAvis(moyenne,nomResto,restaurants);
-                
-                           // parcours du tableau des markers visibles
-                            for (let index = 0; index < markerVisible.length; index++) {
-                                // on rend visible les marqueurs en comparant le titre du marqueur present dans le tableau au nom des restaurants
-                                if (markerVisible[index].title === nomResto) {
-                                    markerVisible[index].setVisible(true);
-                                }
-                            }
+            }
+        }
+        // gestion du filtre max grace a la liste déroulante.
+        filtreEtoile[1].onchange= function(){
+            console.log(restoVisible)
+            // On rend invisible tout les markers pour pouvoir mettre a jour en temps réel les marker filtré
+            for (let j = 0; j < markerVisible.length; j++) {
+                markerVisible[j].setVisible(false)
+            }
+            //on récupere le nombre d'etoile du filtre min
+            valeurEtoileMin = parseInt(filtreEtoile[0].options[filtreEtoile[0].selectedIndex].value);
+            //a chaque chgt du filtre max on vide la parti droite du site pour mise a jour en temps reel
+            restaurants.innerHTML='';
+            // parcours le tableau des moyennes des notes des restos
+            for(i = 0; i < restoVisible.length; i++){
+                //creation des conditions d'affichage des avis selon le filtre
+                if ((restoVisible[i].moyenne() <= parseInt(this.value)) && (restoVisible[i].moyenne() >= valeurEtoileMin) ) {
+                    var nomResto = restoVisible[i].nom;
+                    var moyenne = restoVisible[i].moyenne();
+                    affichageAvis(moyenne,nomResto,restaurants);
+        
+                   // parcours du tableau des markers visibles
+                    for (let index = 0; index < markerVisible.length; index++) {
+                        // on rend visible les marqueurs en comparant le titre du marqueur present dans le tableau au nom des restaurants
+                        if (markerVisible[index].title === nomResto) {
+                            markerVisible[index].setVisible(true);
                         }
                     }
                 }
             }
         }
-        
     })
     
     // API de géolocalisation de javascript 

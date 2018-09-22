@@ -4,26 +4,11 @@ request.open("GET", "restaurants.json", false);
 request.send(null)
 var objetJSON = JSON.parse(request.responseText); 
 
-var addRestaurants = document.getElementById("addRestaurants");
+
 var restaurants = document.getElementById("restaurants");
 var filtre = document.getElementById("filtre");
 var ajoutCommentaire = document.getElementById("ajoutCommentaire");
 var streetView = document.getElementById("streetView");
-
-function calculMoyenne(note) {
-    var additionNote = 0
-    for (let i = 0; i < note.length; i++) {
-        additionNote = additionNote + note[i]
-        var moyenne = additionNote / note.length;
-    };
-    return moyenne
-}
-
-
-
-
-    
-
 
 /**
  * Affiche le nombre d'etoile selon la moyenne
