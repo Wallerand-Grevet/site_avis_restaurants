@@ -9,7 +9,48 @@ var restaurants = document.getElementById("restaurants");
 var filtre = document.getElementById("filtre");
 var ajoutCommentaire = document.getElementById("ajoutCommentaire");
 var streetView = document.getElementById("streetView");
+var bouton = document.getElementById("bouton");
 
+function boutonAjoutCom(tableau,nomResto,ajoutCommentaire) {
+    // Creation d'un bouton pour ajouter des commentaires
+    var divBouton = document.createElement("div");
+    divBouton.id= "newCommentaire";
+    var nomLien = document.createTextNode("ajouter un commentaire");
+    divBouton.appendChild(nomLien);
+    bouton.appendChild(divBouton);
+    // Gestion du clic sur le bouton
+    var newCommentaire = document.getElementById("newCommentaire")
+    newCommentaire.addEventListener("click", function () {
+        var ajoutNote = parseInt(prompt("quel est votre note?"))
+        var ajoutAvis = prompt("quel est votre commentaire?")
+        tableau.note.push(ajoutNote);
+        tableau.avis.push(ajoutAvis);
+        ajoutCommentaire.innerHTML = "";
+        moyenne = tableau.moyenne();
+        affichageAvis(moyenne,nomResto,ajoutCommentaire);
+        commentaireDiv(tableau);
+    })
+}
+/**
+ * Affiche les commentaire des restaurants
+ */
+function commentaireDiv(tableau) {
+    // Creation div commentaire avec titre h3
+    var divCommentaire = document.createElement("div");
+    var commentaire = document.createTextNode("commentaire : ");
+    var h3Commentaire = document.createElement("h3");
+    divCommentaire.appendChild(h3Commentaire);
+    h3Commentaire.appendChild(commentaire);
+    ajoutCommentaire.appendChild(divCommentaire);
+
+    // Insertion de tous les commentaires du restaurant dans la div commentaire 
+    for (let j = 0; j < tableau.avis.length; j++) {
+        var avisRestoClic = document.createTextNode(tableau.avis[j]);
+        var pCommentaire = document.createElement("p");
+        divCommentaire.appendChild(pCommentaire);
+        pCommentaire.appendChild(avisRestoClic);
+    }
+}
 /**
  * Affiche le nombre d'etoile selon la moyenne
  *@param moyenne moyenne des avis du restaurant
@@ -124,6 +165,7 @@ function ajoutRestaurantMap() {
 
         //Ajout d'un evenement lors du click sur les markers 
         marker.addListener('click',function () {
+            bouton.innerHTML="";
             streetView.innerHTML = "";
             ajoutCommentaire.innerHTML = "";
             for (let i = 0; i < tabRestaurants.length; i++) {
@@ -131,25 +173,13 @@ function ajoutRestaurantMap() {
                     var nomResto = tabRestaurants[i].nom;
                     var moyenne = tabRestaurants[i].moyenne();
                     affichageAvis(moyenne,nomResto,ajoutCommentaire);
+                    commentaireDiv(tabRestaurants[i])
+                    boutonAjoutCom(tabRestaurants[i],nomResto,ajoutCommentaire);
                     
 
-                    // Creation div commentaire avec titre h3
-                    var divCommentaire = document.createElement("div");
-                    var commentaire = document.createTextNode("commentaire : ");
-                    var h3Commentaire = document.createElement("h3");
-                    divCommentaire.appendChild(h3Commentaire);
-                    h3Commentaire.appendChild(commentaire);
-                    ajoutCommentaire.appendChild(divCommentaire);
                     
-                    // Insertion de tous les commentaires du json dans la div commentaire 
-                    for (let j = 0; j < tabRestaurants[i].avis.length; j++) {
-                        var avisRestoClic = document.createTextNode(tabRestaurants[i].avis[j]);
-                        var pCommentaire = document.createElement("p");
-                        divCommentaire.appendChild(pCommentaire);
-                        pCommentaire.appendChild(avisRestoClic);
 
-                    
-                    }
+
                     // insertion image google street 
                     imgStreet = document.createElement("img");
                     latitude = this.getPosition().lat();

@@ -3,7 +3,7 @@ h1
     background-color:#E3E7E7;
     text-align: center;
 }
-#restaurants,#filtre, #addRestaurants, #streetView, #ajoutCommentaire
+#restaurants,#filtre, #addRestaurants, #streetView, #ajoutAvis
 {
     text-align: center;
 }
@@ -17,7 +17,7 @@ h1
     overflow: scroll;
     
 }
-#ajoutCommentaire
+#ajoutAvis
 {
     
     background-color: aqua;
@@ -33,4 +33,18 @@ img
 {
     background-color: blueviolet
 }
-
+#newCommentaire
+{
+    font-weight: bold;
+    text-transform: uppercase;
+    color: blue;
+    display: inline-block;
+    border: 1px solid blue;
+    margin-top: 20px;
+    padding: 18px 50px;
+    border-radius: 3px;
+}
+#newCommentaire:hover
+{
+    background-color: coral;
+}
