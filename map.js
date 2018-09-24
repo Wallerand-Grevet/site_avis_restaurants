@@ -28,8 +28,7 @@ function initMap() {
         }
         
         var commentaire = prompt("laissez un avis :")
-        var moyenne = note
-        affichageAvis(moyenne,nomNewResto,restaurants);
+        
         var marker = new google.maps.Marker({
             position: e.latLng,
             map: map,
@@ -42,6 +41,7 @@ function initMap() {
         restaurant.avis.push(commentaire);
         restaurant.note.push(note);
         tabRestaurants.push(restaurant);
+        restaurant.affichageAvis(restaurants);
 
         //Ajout d'un evenement lors du click sur les markers 
         marker.addListener('click',function () {
@@ -50,11 +50,10 @@ function initMap() {
             ajoutCommentaire.innerHTML = "";
             for (let i = 0; i < tabRestaurants.length; i++) {
                 if ((this.getPosition().lat() === tabRestaurants[i].lat) && (this.getPosition().lng() === tabRestaurants[i].long)) {
-                    var nomResto = tabRestaurants[i].nom;
-                    var moyenne = tabRestaurants[i].moyenne();
-                    affichageAvis(moyenne,nomResto,ajoutCommentaire);
-                    commentaireDiv(tabRestaurants[i])
-                    boutonAjoutCom(tabRestaurants[i],nomResto,ajoutCommentaire);
+                    var resto = tabRestaurants[i]
+                    resto.affichageAvis(ajoutCommentaire)
+                    commentaireDiv(resto)
+                    boutonAjoutCom(resto,ajoutCommentaire);
                     // insertion image google street 
                     imgStreet = document.createElement("img");
                     latitude = this.getPosition().lat();
@@ -103,11 +102,11 @@ function initMap() {
                 for (let j = 0; j < markerVisible.length; j++) {
                     markerVisible[j].setVisible(true)
                 }
-                var nomResto = tabRestaurants[i].nom;
-                var moyenne = tabRestaurants[i].moyenne();
+                var nomResto = tabRestaurants[i]
+        
             
                 // affichage des avis et nom resto sur la partie droite
-                affichageAvis(moyenne, nomResto,restaurants)
+                nomResto.affichageAvis(restaurants)
 
                 
             }
@@ -129,14 +128,14 @@ function initMap() {
             for(i = 0; i < restoVisible.length; i++){
                 //creation des conditions d'affichage des avis selon le filtre
                 if ((restoVisible[i].moyenne() >= parseInt(this.value)) && (restoVisible[i].moyenne() <= valeurEtoileMax) ) {
-                    var nomResto = restoVisible[i].nom;
-                    var moyenne = restoVisible[i].moyenne();
-                    affichageAvis(moyenne,nomResto,restaurants);
+                    var resto = restoVisible[i]
+                    
+                    resto.affichageAvis(restaurants)
     
                     // parcours du tableau des markers visibles
                     for (let index = 0; index < markerVisible.length; index++) {
                         // on rend visible les marqueurs en comparant le titre du marqueur present dans le tableau au nom des restaurants
-                        if (markerVisible[index].title === nomResto) {
+                        if (markerVisible[index].title === resto.nom) {
                             markerVisible[index].setVisible(true);
                         }
                         
@@ -146,7 +145,6 @@ function initMap() {
         }
         // gestion du filtre max grace a la liste déroulante.
         filtreEtoile[1].onchange= function(){
-            console.log(restoVisible)
             // On rend invisible tout les markers pour pouvoir mettre a jour en temps réel les marker filtré
             for (let j = 0; j < markerVisible.length; j++) {
                 markerVisible[j].setVisible(false)
@@ -159,14 +157,13 @@ function initMap() {
             for(i = 0; i < restoVisible.length; i++){
                 //creation des conditions d'affichage des avis selon le filtre
                 if ((restoVisible[i].moyenne() <= parseInt(this.value)) && (restoVisible[i].moyenne() >= valeurEtoileMin) ) {
-                    var nomResto = restoVisible[i].nom;
-                    var moyenne = restoVisible[i].moyenne();
-                    affichageAvis(moyenne,nomResto,restaurants);
+                    var resto = restoVisible[i]
+                    resto.affichageAvis(restaurants)
         
                    // parcours du tableau des markers visibles
                     for (let index = 0; index < markerVisible.length; index++) {
                         // on rend visible les marqueurs en comparant le titre du marqueur present dans le tableau au nom des restaurants
-                        if (markerVisible[index].title === nomResto) {
+                        if (markerVisible[index].title === resto.nom) {
                             markerVisible[index].setVisible(true);
                         }
                     }
