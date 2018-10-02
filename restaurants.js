@@ -11,21 +11,7 @@ function Restaurant(nom, adresse, lat, long){
 
 
 
-// boucle qui sert a creer chaque instance restaurant + ajout dans le tableau des restaurants
-for (let i = 0; i < objetJSON.length; i++) {
-    tabNote = [];
-    tabCom = [];
-    var restaurant = new Restaurant(objetJSON[i].restaurantName,objetJSON[i].address,objetJSON[i].lat, objetJSON[i].long);
-    for (let j = 0; j < objetJSON[i].ratings.length; j++) {
-        commentaire = objetJSON[i].ratings[j].comment;
-        etoile = objetJSON[i].ratings[j].stars;
-        tabNote.push(etoile);
-        tabCom.push(commentaire);
-        restaurant.avis = tabCom;
-        restaurant.note = tabNote
-    }
-    tabRestaurants.push(restaurant)
-}
+
 /**
  * methode servant a calculer la moyenne des avis 
  * 
@@ -74,10 +60,38 @@ Restaurant.prototype.affichageAvis= function (id) {
     this.affichageEtoiles(pElt)
 }
 
+// boucle qui sert a creer chaque instance restaurant + ajout dans le tableau des restaurants pour le json local
 
+for (let i = 0; i < objetJSON.length; i++) {
+    tabNote = [];
+    tabCom = [];
+    var restaurant = new Restaurant(objetJSON[i].restaurantName,objetJSON[i].address,objetJSON[i].lat, objetJSON[i].long);
+    for (let j = 0; j < objetJSON[i].ratings.length; j++) {
+        commentaire = objetJSON[i].ratings[j].comment;
+        etoile = objetJSON[i].ratings[j].stars;
+        tabNote.push(etoile);
+        tabCom.push(commentaire);
+        restaurant.avis = tabCom;
+        restaurant.note = tabNote;
 
+    }
+    tabRestaurants.push(restaurant)
+}
 
-
+// boucle qui sert a creer chaque instance restaurant + ajout dans le tableau des restaurants pour le google places.
+for (let i = 0; i < googlePlacesJson.results.length; i++) {
+    tabComPlaces = []
+    var restaurant = new Restaurant(googlePlacesJson.results[i].name,googlePlacesJson.results[i].vicinity,googlePlacesJson.results[i].geometry.location.lat, googlePlacesJson.results[i].geometry.location.lng);
+    restaurant.placeId = googlePlacesJson.results[i].place_id;
+    avisPlacesJson = avisPlaces(restaurant.placeId);
+    for (let j = 0; j < avisPlacesJson.result.reviews.length; j++) {
+        tabComPlaces.push(avisPlacesJson.result.reviews[j].text);
+        restaurant.avis = tabComPlaces;
+    }
+    restaurant.note = [];
+    restaurant.note.push(googlePlacesJson.results[i].rating);
+    tabRestaurants.push(restaurant)
+    }
 /**
  * Creation fonction qui genère les restaurants du JSOn
  * @param  json tableau representant le fichier json (objetJSON)
@@ -107,7 +121,7 @@ function ajoutRestaurantMap() {
             streetView.innerHTML = "";
             ajoutCommentaire.innerHTML = "";
             for (let i = 0; i < tabRestaurants.length; i++) {
-                if ((this.getPosition().lat() === tabRestaurants[i].lat) && (this.getPosition().lng() === tabRestaurants[i].long)) {
+                if ((markerTab[i].title === tabRestaurants[i].nom) && ((this.getPosition().lat() === tabRestaurants[i].lat) || (this.getPosition().lng() === tabRestaurants[i].long))) {
                     var resto = tabRestaurants[i]
                     resto.affichageAvis(ajoutCommentaire)
                     commentaireDiv(resto)

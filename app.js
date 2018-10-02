@@ -1,8 +1,30 @@
+
+
+
+
+
 // importation du json en Objet JS
+var apiPlace = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=48.866667,2.333333&radius=5000&type=restaurant&key=AIzaSyCNd35nwOHwihsaBPyuffJGLWgixK3JKy8"
 var request = new XMLHttpRequest();
 request.open("GET", "restaurants.json", false);
 request.send(null)
 var objetJSON = JSON.parse(request.responseText); 
+
+// importation google places ajout restaurant
+var googlePlaces = new XMLHttpRequest();
+googlePlaces.open("GET", apiPlace, false);
+googlePlaces.send(null);
+var googlePlacesJson = JSON.parse(googlePlaces.responseText);
+
+//importation google places avis
+function avisPlaces(placeId) {
+    var apiPlaceAvis = "https://maps.googleapis.com/maps/api/place/details/json?placeid="+ placeId + "&fields=reviews&key=AIzaSyCNd35nwOHwihsaBPyuffJGLWgixK3JKy8"
+    var googlePlacesAvis = new XMLHttpRequest();
+    googlePlacesAvis.open("GET", apiPlaceAvis, false);
+    googlePlacesAvis.send(null);
+    var googlePlacesAvisJson = JSON.parse(googlePlacesAvis.responseText);
+    return googlePlacesAvisJson;
+}
 
 
 var restaurants = document.getElementById("restaurants");
@@ -16,6 +38,7 @@ var markerTab = [];
 
 // Creation tableau pour stocker chaque objet restaurant
 var tabRestaurants = [];
+
 
 
 /**
@@ -42,7 +65,7 @@ function commentaireDiv(resto) {
 
 /**
  * fonction qui sert a ajouter le bouton pour ajouter un nouvel avis
- * @param  nomResto 
+ * @param  resto 
  * @param  ajoutCommentaire 
  */
 function boutonAjoutCom(resto,ajoutCommentaire) {
