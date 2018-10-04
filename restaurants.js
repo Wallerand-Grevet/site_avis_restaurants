@@ -75,11 +75,11 @@ for (let i = 0; i < objetJSON.length; i++) {
         restaurant.note = tabNote;
 
     }
-    tabRestaurants.push(restaurant)
+    tabRestaurantsJson.push(restaurant)
 }
 
 // boucle qui sert a creer chaque instance restaurant + ajout dans le tableau des restaurants pour le google places.
-for (let i = 0; i < googlePlacesJson.results.length; i++) {
+/*for (let i = 0; i < googlePlacesJson.results.length; i++) {
     tabComPlaces = []
     var restaurant = new Restaurant(googlePlacesJson.results[i].name,googlePlacesJson.results[i].vicinity,googlePlacesJson.results[i].geometry.location.lat, googlePlacesJson.results[i].geometry.location.lng);
     restaurant.placeId = googlePlacesJson.results[i].place_id;
@@ -92,55 +92,35 @@ for (let i = 0; i < googlePlacesJson.results.length; i++) {
     restaurant.note.push(googlePlacesJson.results[i].rating);
     tabRestaurants.push(restaurant)
     }
+*/
 /**
  * Creation fonction qui genère les restaurants du JSOn
  * @param  json tableau representant le fichier json (objetJSON)
  */
 function ajoutRestaurantMap() {
-    iconeResto = 'img/icone-resto-json.png'
+    iconeResto = 'img/icone-resto-json.png';
 
-    for (var i = 0; i < tabRestaurants.length; i++) {
-        var latitudeResto = tabRestaurants[i].lat;
-        var longitudeResto = tabRestaurants[i].long;
-        
-        positionRestaurant = {lat : latitudeResto, lng: longitudeResto}
-        // creation des marqueurs de la position des restaurants.
-        marker = new google.maps.Marker({
-            position: positionRestaurant,
-            map: map,
-            icon:iconeResto,
-            title: tabRestaurants[i].nom
-        });
-        
-        //  ajout du marker dans le tableau markerTab
-        markerTab.push(marker);
-
-        //Ajout d'un evenement lors du click sur les markers 
-        marker.addListener('click',function () {
-            bouton.innerHTML="";
-            streetView.innerHTML = "";
-            ajoutCommentaire.innerHTML = "";
-            for (let i = 0; i < tabRestaurants.length; i++) {
-                if ((markerTab[i].title === tabRestaurants[i].nom) && ((this.getPosition().lat() === tabRestaurants[i].lat) || (this.getPosition().lng() === tabRestaurants[i].long))) {
-                    var resto = tabRestaurants[i]
-                    resto.affichageAvis(ajoutCommentaire)
-                    commentaireDiv(resto)
-                    boutonAjoutCom(resto,ajoutCommentaire);
-                    
-                    // insertion image google street 
-                    imgStreet = document.createElement("img");
-                    latitude = this.getPosition().lat();
-                    longitude = this.getPosition().lng();
-                    var street = "https://maps.googleapis.com/maps/api/streetview?size=1600x500&location=" + latitude + "," + longitude + "&fov=90&pitch=10&key=AIzaSyCNd35nwOHwihsaBPyuffJGLWgixK3JKy8";
-
-                    imgStreet.src= street;
-                    streetView.appendChild(imgStreet);
-                }
-                
+    service = new google.maps.places.PlacesService(map);
+    var requete = {
+        location: paris,
+        radius: '1500',
+        type: ['restaurant']
+      };
+    function rappel(results, status) {
+        if (status == google.maps.places.PlacesServiceStatus.OK) {
+            for (let i = 0; i < results.length; i++) {
+                tabComPlaces = []
+                var restaurant = new Restaurant(results[i].name,results[i].vicinity,results[i].geometry.location.lat(), results[i].geometry.location.lng());
+                restaurant.placeId = results[i].place_id;
+                restaurant.note = [];
+                restaurant.note.push(results[i].rating);
+                tabRestaurantsPlaces.push(restaurant)
             }
-           
-        })
-        
-        
+            creerMarqueur(tabRestaurantsPlaces, markerTabPlaces)
+        }
     }
+    service.nearbySearch(requete,rappel)
+
+
+    creerMarqueur(tabRestaurantsJson,markerTabJson)
 }

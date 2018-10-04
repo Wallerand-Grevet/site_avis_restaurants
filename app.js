@@ -4,16 +4,20 @@
 
 
 // importation du json en Objet JS
-var apiPlace = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=48.866667,2.333333&radius=5000&type=restaurant&key=AIzaSyCNd35nwOHwihsaBPyuffJGLWgixK3JKy8"
 var request = new XMLHttpRequest();
 request.open("GET", "restaurants.json", false);
 request.send(null)
 var objetJSON = JSON.parse(request.responseText); 
 
 // importation google places ajout restaurant
+/*
+var apiPlace = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=48.866667,2.333333&radius=5000&type=restaurant&key=AIzaSyCNd35nwOHwihsaBPyuffJGLWgixK3JKy8"
 var googlePlaces = new XMLHttpRequest();
 googlePlaces.open("GET", apiPlace, false);
-googlePlaces.send(null);
+googlePlaces.setRequestHeader("Access-Control-Allow-Origin", "*");
+googlePlaces.setRequestHeader("Access-Control-Allow-Methods", "GET");
+googlePlaces.setRequestHeader("Access-Control-Allow-Headers", "X-Custom-Header");
+googlePlaces.send();
 var googlePlacesJson = JSON.parse(googlePlaces.responseText);
 
 //importation google places avis
@@ -25,8 +29,8 @@ function avisPlaces(placeId) {
     var googlePlacesAvisJson = JSON.parse(googlePlacesAvis.responseText);
     return googlePlacesAvisJson;
 }
-
-
+*/
+var paris = {lat : 48.866667, lng: 2.333333}
 var restaurants = document.getElementById("restaurants");
 var filtre = document.getElementById("filtre");
 var ajoutCommentaire = document.getElementById("ajoutCommentaire");
@@ -34,12 +38,64 @@ var streetView = document.getElementById("streetView");
 var bouton = document.getElementById("bouton");
 
 // creation tableau regroupant les markers des restaurants
-var markerTab = [];
+var markerTabJson = [];
+var markerTabPlaces = [];
 
 // Creation tableau pour stocker chaque objet restaurant
-var tabRestaurants = [];
+var tabRestaurantsPlaces = [];
+var tabRestaurantsJson = [];
 
+/**
+ * Fonction qui sert a ajouter les marqueurs sur la map selon le tableau comprenant les instance de Restaurant
+ * @param  tableauRestaurant 
+ */
+function creerMarqueur(tableauRestaurant, tableauMarqueur) {
+    for (var i = 0; i < tableauRestaurant.length; i++) {
+        
+        var latitudeResto = tableauRestaurant[i].lat;
+        var longitudeResto = tableauRestaurant[i].long;
+        
+        positionRestaurant = {lat : latitudeResto, lng: longitudeResto}
+        // creation des marqueurs de la position des restaurants.
+        marker = new google.maps.Marker({
+            position: positionRestaurant,
+            map: map,
+            icon:iconeResto,
+            title: tableauRestaurant[i].nom
+        });
+        
+        //  ajout du marker dans le tableau markerTab
+        tableauMarqueur.push(marker);
 
+        //Ajout d'un evenement lors du click sur les markers 
+        marker.addListener('click',function () {
+            bouton.innerHTML="";
+            streetView.innerHTML = "";
+            ajoutCommentaire.innerHTML = "";
+            for (let i = 0; i < tableauRestaurant.length; i++) {
+                if ((tableauMarqueur[i].title === tableauRestaurant[i].nom) && ((this.getPosition().lat() === tableauRestaurant[i].lat) || (this.getPosition().lng() === tableauRestaurant[i].long))) {
+                    var resto = tableauRestaurant[i]
+                    resto.affichageAvis(ajoutCommentaire)
+                    commentaireDiv(resto)
+                    boutonAjoutCom(resto,ajoutCommentaire);
+                    
+                    // insertion image google street 
+                    imgStreet = document.createElement("img");
+                    latitude = this.getPosition().lat();
+                    longitude = this.getPosition().lng();
+                    var street = "https://maps.googleapis.com/maps/api/streetview?size=1600x500&location=" + latitude + "," + longitude + "&fov=90&pitch=10&key=AIzaSyCNd35nwOHwihsaBPyuffJGLWgixK3JKy8";
+
+                    imgStreet.src= street;
+                    streetView.appendChild(imgStreet);
+                }
+                
+            }
+           
+        })
+        
+        
+    }
+}
 
 /**
  * Affiche les commentaires des restaurants

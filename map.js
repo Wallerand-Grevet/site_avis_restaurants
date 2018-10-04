@@ -5,14 +5,18 @@ var map;
  */
 function initMap() {
     var filtreEtoile = document.querySelectorAll("select");
-    var paris = {lat : 48.866667, lng: 2.333333}
+    
     // creation de la map avec comme centre Paris
     map = new google.maps.Map(document.getElementById('map'), {
         center: paris,
         zoom: 9
     });
+
+    
+    
+    
     // importation restaurant du fichier JSON
-    ajoutRestaurantMap()
+    ajoutRestaurantMap();
 
     // Ajout des marqueurs lors du clic sur la map
     map.addListener('click',function (e) {
@@ -75,7 +79,11 @@ function initMap() {
     
     // Recuperation des bornes de la carte et ajout des restaurant afficher sur la carte dans la partie gauche a chaque action sur la map 
     map.addListener('bounds_changed', function () {
-        
+        //on fusionne les tableau des restaurants.
+        tabRestaurants = tabRestaurantsJson.concat(tabRestaurantsPlaces);
+        //on fusionne les tableau des marqueurs
+        markerTab = markerTabJson.concat(markerTabPlaces);
+
         filtre.style.visibility= 'visible';
         //a chaque mvt de la map on met le filtre min a 1 etoile et le filtre max a 5 étoiles
         filtreEtoile[0].selectedIndex=0;
