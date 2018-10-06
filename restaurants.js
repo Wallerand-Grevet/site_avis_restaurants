@@ -103,24 +103,55 @@ function ajoutRestaurantMap() {
     service = new google.maps.places.PlacesService(map);
     var requete = {
         location: paris,
-        radius: '1500',
+        radius: '15000',
         type: ['restaurant']
-      };
+    };
+
+
+    function rappelAvis (result,status){
+        if (status == google.maps.places.PlacesServiceStatus.OK) {
+            console.log(result)
+            for (let i = 0; i < tabRestaurantsPlaces.length; i++) {
+                if (result.name === tabRestaurantsPlaces[i].nom) {
+                    tabComPlaces = []
+                    for (let j = 0; j < result.reviews.length; j++) {
+                        tabComPlaces.push(result.reviews[j].text);
+                        tabRestaurantsPlaces[i].avis = tabComPlaces;
+                    }
+                
+                }
+            }
+            
+        }else{
+            alert("erreur de google places appuyer sur ok pour recharger la page")
+        }
+    }
+    
     function rappel(results, status) {
         if (status == google.maps.places.PlacesServiceStatus.OK) {
             for (let i = 0; i < results.length; i++) {
-                tabComPlaces = []
                 var restaurant = new Restaurant(results[i].name,results[i].vicinity,results[i].geometry.location.lat(), results[i].geometry.location.lng());
                 restaurant.placeId = results[i].place_id;
                 restaurant.note = [];
                 restaurant.note.push(results[i].rating);
-                tabRestaurantsPlaces.push(restaurant)
+                tabRestaurantsPlaces.push(restaurant);
+            }
+            for (let index = 0; index < tabRestaurantsPlaces.length; index++) {
+                var request = {
+                    placeId: tabRestaurantsPlaces[index].placeId,
+                    fields: ['name','review']
+                };
+                service.getDetails(request, rappelAvis)
+        
             }
             creerMarqueur(tabRestaurantsPlaces, markerTabPlaces)
+        }else{
+            alert("erreur de google places appuyer sur ok pour recharger la page 5555555")
         }
     }
+    
+    
+    
     service.nearbySearch(requete,rappel)
-
-
     creerMarqueur(tabRestaurantsJson,markerTabJson)
 }

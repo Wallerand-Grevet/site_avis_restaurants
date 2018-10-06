@@ -103,7 +103,7 @@ function creerMarqueur(tableauRestaurant, tableauMarqueur) {
 function commentaireDiv(resto) {
     // Creation div commentaire avec titre h3
     var divCommentaire = document.createElement("div");
-    var commentaire = document.createTextNode("commentaire : ");
+    var commentaire = document.createTextNode("avis : ");
     var h3Commentaire = document.createElement("h3");
     divCommentaire.appendChild(h3Commentaire);
     h3Commentaire.appendChild(commentaire);
@@ -142,5 +142,12 @@ function boutonAjoutCom(resto,ajoutCommentaire) {
         moyenne = resto.moyenne();
         resto.affichageAvis(ajoutCommentaire)
         commentaireDiv(resto);
+
+        // On efface la liste de restaurant visible a droite puis on les rajoute pour actualiser la note
+        restaurants.innerHTML = '';
+        for (let i = 0; i < restoVisible.length; i++) {
+            restoVisible[i].affichageAvis(restaurants)
+        }
+        
     })
 }

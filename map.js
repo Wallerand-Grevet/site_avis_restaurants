@@ -1,5 +1,5 @@
 var map;
-
+var restoVisible = [];
 /**
  * Initialisation de la map google avec les marqueurs des restaurants et gestion des mouvement effectué sur la map.
  */
@@ -21,7 +21,6 @@ function initMap() {
     // Ajout des marqueurs lors du clic sur la map
     map.addListener('click',function (e) {
         iconeRestoAdd = 'img/icone-resto-add.png'
-        filtre.style.visibility = 'hidden';
         filtreEtoile[0].selectedIndex=0;
         filtreEtoile[1].selectedIndex=4;
         var nomNewResto = prompt("quel est le nom de votre restaurant?");
@@ -40,12 +39,14 @@ function initMap() {
             icon: iconeRestoAdd
         });
         
-        markerTab.push(marker)
+        markerTabJson.push(marker)
         restaurant = new Restaurant (nomNewResto,adresse, marker.position.lat(), marker.position.lng())
         restaurant.avis.push(commentaire);
         restaurant.note.push(note);
-        tabRestaurants.push(restaurant);
+        tabRestaurantsJson.push(restaurant);
+        restoVisible.push(restaurant)
         restaurant.affichageAvis(restaurants);
+
 
         //Ajout d'un evenement lors du click sur les markers 
         marker.addListener('click',function () {
@@ -55,6 +56,7 @@ function initMap() {
             for (let i = 0; i < tabRestaurants.length; i++) {
                 if ((this.getPosition().lat() === tabRestaurants[i].lat) && (this.getPosition().lng() === tabRestaurants[i].long)) {
                     var resto = tabRestaurants[i]
+                    
                     resto.affichageAvis(ajoutCommentaire)
                     commentaireDiv(resto)
                     boutonAjoutCom(resto,ajoutCommentaire);
@@ -83,8 +85,6 @@ function initMap() {
         tabRestaurants = tabRestaurantsJson.concat(tabRestaurantsPlaces);
         //on fusionne les tableau des marqueurs
         markerTab = markerTabJson.concat(markerTabPlaces);
-
-        filtre.style.visibility= 'visible';
         //a chaque mvt de la map on met le filtre min a 1 etoile et le filtre max a 5 étoiles
         filtreEtoile[0].selectedIndex=0;
         filtreEtoile[1].selectedIndex=4;
@@ -92,7 +92,7 @@ function initMap() {
         restaurants.innerHTML = '';
         // creation tableaux recupérant les markers et les restos visible sur la map
         var markerVisible = [];
-        var restoVisible = [];
+        restoVisible = []
         // creation des bornes de la map
         var bornes = map.getBounds();
         var sudLat = bornes.getSouthWest().lat();
