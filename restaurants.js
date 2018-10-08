@@ -49,7 +49,9 @@ Restaurant.prototype.affichageEtoiles = function (pElt) {
 Restaurant.prototype.affichageAvis= function (id) {
     var divElt = document.createElement("div");
     var h2Elt = document.createElement("h2");
+    h2Elt.style.fontFamily = "'Anton', sans-serif";
     var pElt = document.createElement("p");
+    pElt.style.fontFamily ="'Charmonman', cursive";
     var nomResto = document.createTextNode(this.nom);
     var moyenneResto = document.createTextNode("note : ");
     id.appendChild(divElt);
@@ -78,21 +80,6 @@ for (let i = 0; i < objetJSON.length; i++) {
     tabRestaurantsJson.push(restaurant)
 }
 
-// boucle qui sert a creer chaque instance restaurant + ajout dans le tableau des restaurants pour le google places.
-/*for (let i = 0; i < googlePlacesJson.results.length; i++) {
-    tabComPlaces = []
-    var restaurant = new Restaurant(googlePlacesJson.results[i].name,googlePlacesJson.results[i].vicinity,googlePlacesJson.results[i].geometry.location.lat, googlePlacesJson.results[i].geometry.location.lng);
-    restaurant.placeId = googlePlacesJson.results[i].place_id;
-    avisPlacesJson = avisPlaces(restaurant.placeId);
-    for (let j = 0; j < avisPlacesJson.result.reviews.length; j++) {
-        tabComPlaces.push(avisPlacesJson.result.reviews[j].text);
-        restaurant.avis = tabComPlaces;
-    }
-    restaurant.note = [];
-    restaurant.note.push(googlePlacesJson.results[i].rating);
-    tabRestaurants.push(restaurant)
-    }
-*/
 /**
  * Creation fonction qui genère les restaurants du JSOn
  * @param  json tableau representant le fichier json (objetJSON)
@@ -110,7 +97,6 @@ function ajoutRestaurantMap() {
 
     function rappelAvis (result,status){
         if (status == google.maps.places.PlacesServiceStatus.OK) {
-            console.log(result)
             for (let i = 0; i < tabRestaurantsPlaces.length; i++) {
                 if (result.name === tabRestaurantsPlaces[i].nom) {
                     tabComPlaces = []

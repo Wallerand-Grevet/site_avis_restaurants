@@ -23,14 +23,25 @@ function initMap() {
         iconeRestoAdd = 'img/icone-resto-add.png'
         filtreEtoile[0].selectedIndex=0;
         filtreEtoile[1].selectedIndex=4;
-        var nomNewResto = prompt("quel est le nom de votre restaurant?");
-        var adresse  = prompt("quel est l'adresse du restaurant?")
+        var nomNewResto = null;
+        while ((nomNewResto === null) || (nomNewResto === '')) {
+            nomNewResto = prompt("quel est le nom de votre restaurant?");
+        }
+        var adresse = null
+        while ((adresse === null) || (adresse === '')) {
+            adresse  = prompt("quel est l'adresse du restaurant?")
+        }
+
         var note = 0 
         while ((note <=0) || (note>5) || (isNaN(note)=== true)) {
             note = parseInt(prompt("quel est votre note entre 1 et 5?"));
         }
         
-        var commentaire = prompt("laissez un avis :")
+        var commentaire = null
+        while ((commentaire === null) || (commentaire === '')) {
+             commentaire = prompt("laissez un avis :")
+        }
+        
         
         var marker = new google.maps.Marker({
             position: e.latLng,
@@ -47,31 +58,31 @@ function initMap() {
         restoVisible.push(restaurant)
         restaurant.affichageAvis(restaurants);
 
-
+        
         //Ajout d'un evenement lors du click sur les markers 
         marker.addListener('click',function () {
+            console.log(tabRestaurantsJson)
             bouton.innerHTML = "";
             streetView.innerHTML = "";
             ajoutCommentaire.innerHTML = "";
-            for (let i = 0; i < tabRestaurants.length; i++) {
-                if ((this.getPosition().lat() === tabRestaurants[i].lat) && (this.getPosition().lng() === tabRestaurants[i].long)) {
-                    var resto = tabRestaurants[i]
-                    
-                    resto.affichageAvis(ajoutCommentaire)
-                    commentaireDiv(resto)
+            for (let i = 0; i < tabRestaurantsJson.length; i++) {
+                if ((this.getPosition().lat() === tabRestaurantsJson[i].lat) && (this.getPosition().lng() === tabRestaurantsJson[i].long)) {
+                    var resto = tabRestaurantsJson[i];
+                    resto.affichageAvis(ajoutCommentaire);
+                    commentaireDiv(resto);
                     boutonAjoutCom(resto,ajoutCommentaire);
                     // insertion image google street 
                     imgStreet = document.createElement("img");
                     latitude = this.getPosition().lat();
                     longitude = this.getPosition().lng();
-                    var street = "https://maps.googleapis.com/maps/api/streetview?size=1600x500&location=" + latitude + "," + longitude + "&fov=90&pitch=10&key=AIzaSyCNd35nwOHwihsaBPyuffJGLWgixK3JKy8";
+                    var street = "https://maps.googleapis.com/maps/api/streetview?size=800x500&location=" + latitude + "," + longitude + "&fov=90&pitch=10&key=AIzaSyCNd35nwOHwihsaBPyuffJGLWgixK3JKy8";
 
                     imgStreet.src= street;
                     streetView.appendChild(imgStreet);
                 }
                 
             }
-           
+            ajoutAvis.style.visibility = 'visible';
         })
         
         
