@@ -9,7 +9,7 @@ function initMap() {
     // creation de la map avec comme centre Paris
     map = new google.maps.Map(document.getElementById('map'), {
         center: paris,
-        zoom: 9
+        zoom: 5
     });
 
     
@@ -217,6 +217,6 @@ function success(pos){
     // On centre la map sur le marqueur de la position actuelle
     map.setCenter(positionActuelle)
     // on met le zoom de la carte a 9
-    map.setZoom(9)
+    map.setZoom(6)
 
 }

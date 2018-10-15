@@ -3,11 +3,20 @@
 
 
 
-// importation du json en Objet JS
-var request = new XMLHttpRequest();
-request.open("GET", "restaurants.json", false);
-request.send(null)
-var objetJSON = JSON.parse(request.responseText); 
+var req = new XMLHttpRequest();
+req.open("GET", "restaurants.json",false);
+req.addEventListener("load", function () {
+    if (req.status >= 200 && req.status < 400) {
+        objetJSON = JSON.parse(req.responseText);
+    } else {
+        console.error(req.status + " " + req.statusText + " " + url);
+    }
+});
+req.addEventListener("error", function () {
+    console.error("Erreur réseau avec l'URL " + url);
+});
+req.send(null);
+
 
 var paris = {lat : 48.866667, lng: 2.333333}
 var restaurants = document.getElementById("restaurants");
@@ -125,7 +134,6 @@ function boutonAjoutCom(resto,ajoutCommentaire) {
         while ((ajoutAvis === null) || (ajoutAvis === '')) {
             ajoutAvis = prompt("quel est votre commentaire?")
         }
-        console.log(ajoutAvis)
         resto.note.push(ajoutNote);
         resto.avis.push(ajoutAvis);
         ajoutCommentaire.innerHTML = "";

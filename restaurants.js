@@ -86,16 +86,19 @@ for (let i = 0; i < objetJSON.length; i++) {
  */
 function ajoutRestaurantMap() {
     iconeResto = 'img/icone-resto-json.png';
-
+    var centreLat = map.getCenter().lat();
+    var centreLng = map.getCenter().lng();
+    var centre = {lat : centreLat, lng: centreLng};
     service = new google.maps.places.PlacesService(map);
     var requete = {
-        location: paris,
-        radius: '15000',
+        location: centre,
+        radius: '5000',
         type: ['restaurant']
     };
 
-
+    
     function rappelAvis (result,status){
+        
         if (status == google.maps.places.PlacesServiceStatus.OK) {
             for (let i = 0; i < tabRestaurantsPlaces.length; i++) {
                 if (result.name === tabRestaurantsPlaces[i].nom) {
@@ -107,9 +110,8 @@ function ajoutRestaurantMap() {
                 
                 }
             }
-            
         }else{
-            alert("erreur de google places appuyer sur ok pour recharger la page")
+            alert("L'application n'a pas plus charger tous les avis veuillez recharger la page")
         }
     }
     
@@ -123,16 +125,22 @@ function ajoutRestaurantMap() {
                 tabRestaurantsPlaces.push(restaurant);
             }
             for (let index = 0; index < tabRestaurantsPlaces.length; index++) {
-                var request = {
-                    placeId: tabRestaurantsPlaces[index].placeId,
-                    fields: ['name','review']
-                };
-                service.getDetails(request, rappelAvis)
+                (function (index) {
+                    setTimeout(function () {
+                        var request = {
+                            placeId: tabRestaurantsPlaces[index].placeId,
+                            fields: ['name','review']
+                        };
+                        service.getDetails(request, rappelAvis)
+                    }, 500*index);
+                  })(index);
+
+                
         
             }
             creerMarqueur(tabRestaurantsPlaces, markerTabPlaces)
         }else{
-            alert("erreur de google places appuyer sur ok pour recharger la page 5555555")
+            alert("L'application n'a pas plus charger tous les avis veuillez recharger la page");
         }
     }
     
