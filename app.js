@@ -35,7 +35,8 @@ var tabRestaurantsJson = [];
 
 /**
  * Fonction qui sert a ajouter les marqueurs sur la map selon le tableau comprenant les instance de Restaurant
- * @param  tableauRestaurant 
+ * @param  tableauRestaurant tableau contenant les instance des restaurants
+ * @param tableauMarqueur tableau contenant les marqueurs
  */
 function creerMarqueur(tableauRestaurant, tableauMarqueur) {
     for (var i = 0; i < tableauRestaurant.length; i++) {

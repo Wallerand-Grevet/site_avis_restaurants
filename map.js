@@ -216,7 +216,7 @@ function success(pos){
     });
     // On centre la map sur le marqueur de la position actuelle
     map.setCenter(positionActuelle)
-    // on met le zoom de la carte a 9
+    // on met le zoom de la carte a 6
     map.setZoom(6)
 
 }

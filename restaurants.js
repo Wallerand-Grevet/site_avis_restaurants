@@ -12,10 +12,9 @@ function Restaurant(nom, adresse, lat, long){
 
 
 
-/**
- * methode servant a calculer la moyenne des avis 
- * 
- */
+
+// methode servant a calculer la moyenne des avis 
+
 Restaurant.prototype.moyenne = function () {
     var additionNote = 0
     for (let i = 0; i < this.note.length; i++) {
@@ -24,6 +23,8 @@ Restaurant.prototype.moyenne = function () {
     };
     return moyenne
 };
+
+// // methode servant a afficher les etoiles selon la moyenne
 
 Restaurant.prototype.affichageEtoiles = function (pElt) {
     var apresVirgule = this.moyenne() - (Math.floor(this.moyenne()))
@@ -46,6 +47,7 @@ Restaurant.prototype.affichageEtoiles = function (pElt) {
     }
 }
 
+// // methode servant a afficher les avis
 Restaurant.prototype.affichageAvis= function (id) {
     var divElt = document.createElement("div");
     var h2Elt = document.createElement("h2");
@@ -81,14 +83,16 @@ for (let i = 0; i < objetJSON.length; i++) {
 }
 
 /**
- * Creation fonction qui genère les restaurants du JSOn
- * @param  json tableau representant le fichier json (objetJSON)
+ * Creation fonction qui genère les restaurants sur la map
+ * 
  */
 function ajoutRestaurantMap() {
     iconeResto = 'img/icone-resto-json.png';
+    // recuperation du centre de la map
     var centreLat = map.getCenter().lat();
     var centreLng = map.getCenter().lng();
     var centre = {lat : centreLat, lng: centreLng};
+    // appel au service google places
     service = new google.maps.places.PlacesService(map);
     var requete = {
         location: centre,
@@ -96,10 +100,16 @@ function ajoutRestaurantMap() {
         type: ['restaurant']
     };
 
-    
+    /**
+     * 
+     * @param result resultat que renvoie google places
+     * @param status si google places est accessible
+     */
+
     function rappelAvis (result,status){
         
         if (status == google.maps.places.PlacesServiceStatus.OK) {
+             // creation d'une boucle pour ajouter les avis des restaurants de google places dans un tableau
             for (let i = 0; i < tabRestaurantsPlaces.length; i++) {
                 if (result.name === tabRestaurantsPlaces[i].nom) {
                     tabComPlaces = []
@@ -114,9 +124,14 @@ function ajoutRestaurantMap() {
             alert("L'application n'a pas plus charger tous les avis veuillez recharger la page")
         }
     }
-    
+    /**
+     * 
+     * @param results resultat que renvoie google places
+     * @param status si google places est accessible
+     */
     function rappel(results, status) {
         if (status == google.maps.places.PlacesServiceStatus.OK) {
+            // creation d'une boucle pour ajouter les notes des restaurants de google places dans un tableau
             for (let i = 0; i < results.length; i++) {
                 var restaurant = new Restaurant(results[i].name,results[i].vicinity,results[i].geometry.location.lat(), results[i].geometry.location.lng());
                 restaurant.placeId = results[i].place_id;
@@ -124,6 +139,7 @@ function ajoutRestaurantMap() {
                 restaurant.note.push(results[i].rating);
                 tabRestaurantsPlaces.push(restaurant);
             }
+            // creation d'une boucle pour ajouter les avis des restaurants de google places avec un "settimeout" pour ne pas avoir d'echec lors de la requete 
             for (let index = 0; index < tabRestaurantsPlaces.length; index++) {
                 (function (index) {
                     setTimeout(function () {
@@ -131,6 +147,7 @@ function ajoutRestaurantMap() {
                             placeId: tabRestaurantsPlaces[index].placeId,
                             fields: ['name','review']
                         };
+                        // on cherche les details des restaurants sur google places
                         service.getDetails(request, rappelAvis)
                     }, 500*index);
                   })(index);
@@ -143,9 +160,7 @@ function ajoutRestaurantMap() {
             alert("L'application n'a pas plus charger tous les avis veuillez recharger la page");
         }
     }
-    
-    
-    
+    // on cherche les restaurants sur google place 
     service.nearbySearch(requete,rappel)
     creerMarqueur(tabRestaurantsJson,markerTabJson)
 }
